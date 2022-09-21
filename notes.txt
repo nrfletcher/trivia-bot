@@ -1,0 +1,9 @@
+Workspace notes for now::
+
+Connect Python script to Discord API {}
+Run bot and confirm connection and functionality with Discord client (success)
+Connecy MySQL database to store user data
+Allow users to call functions which retrieve database information
+Call trivia API for getting questions
+Do I need to utilize multithreading?? (don't think so)
+Deploy with Heroku

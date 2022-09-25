@@ -4,7 +4,7 @@ from questions import cleanup
 
 # Setting token for API interaction and setting our bot (client) permissions to Intents.all()
 # Intents was changed in Discord API recently, changes functionality of permissions via developer panel
-TOKEN = 'MTAyMDQzNzM4OTA0NDM1OTE3OA.G0vJpv.1Zp5zJxekd4kKR6gtyL4obLxtJydlnnzhe15AA'
+TOKEN = '...'
 client = discord.Client(intents=discord.Intents.all())
 
 

@@ -1,13 +1,17 @@
 import requests
 
-# API interaction layer
+# API interaction takes place here
+# Create an extensible way to add additional trivia questions later on
+# Should do all the heavy lifting to reduce massive code blocks in main
 
 
 def default_answer_no_url():
+
     # Code needed to make API GET request and format into a dictionary holding data
     response = requests.get("https://opentdb.com/api.php?amount=1&category=18&difficulty=hard&type=multiple")
     query = response.json()
     data = query['results'][0]
+
     # All possible return options for our query
     question = query['results'][0]['question']
     question_category = query['results'][0]['category']
@@ -15,6 +19,7 @@ def default_answer_no_url():
     question_difficulty = query['results'][0]['difficulty']
     question_answer = query['results'][0]['correct_answer']
     incorrect_answers = query['results'][0]['incorrect_answers']
+
     # Confirm all information adds up (incorrect answers should be a list of strings)
     print(question)
     print(question_answer)
@@ -25,10 +30,15 @@ def default_answer_no_url():
 
 
 def default_answer_url_provided(url):
+
+    # Affirming that link is proper value
     if isinstance(url, str):
+
+        # This repeats functionality of above with an url provided (should explain itself)
         response = requests.get(url)
         query = response.json()
         data = query['results'][0]
+
         # All return values
         question = query['results'][0]['question']
         question_category = query['results'][0]['category']
@@ -36,7 +46,8 @@ def default_answer_url_provided(url):
         question_difficulty = query['results'][0]['difficulty']
         question_answer = query['results'][0]['correct_answer']
         incorrect_answers = query['results'][0]['incorrect_answers']
-        # Same functionality, maybe rewrite to not have redundant code
+
+        # Same functionality, maybe rewrite to not have redundant code (?) Come back later
         print(question)
         print(question_answer)
         print(question_difficulty)
@@ -49,11 +60,13 @@ def default_answer_url_provided(url):
 
 def question_tolist(url):
     if isinstance(url, str):
+
+        # List for now, consider going to hashmap implementation instead
         response = requests.get(url)
         query = response.json()
         data = query['results'][0]
-        # Get trivia question and convert to a list for ease of access
 
+        # Get trivia question and convert to a list for ease of access
         question = query['results'][0]['question']
         question_category = query['results'][0]['category']
         question_type = query['results'][0]['type']
@@ -67,8 +80,9 @@ def question_tolist(url):
 
 def get_question(url):
     if not isinstance(url, str):
-        raise TypeError('Must be string')
+        raise TypeError('This needs to be a string url')
     else:
+        # Shortened, only need essential information for our main
         response = requests.get(url)
         query = response.json()
         question = query['results'][0]['question']
@@ -76,16 +90,20 @@ def get_question(url):
         incorrect_answers = query['results'][0]['incorrect_answers']
         choices = incorrect_answers
         choices.append(question_answer)
+
         # Get our question more readable for our Discord API layer
         return {'question': question, 'answer': question_answer, 'choices': choices}
 
 
 def random_question():
     return get_question("https://opentdb.com/api.php?amount=1")
+    # Accesses a random difficulty random category question from OpenTDB
 
 
-# Not the prettiest solution, can probably implement a string algorithm instead
+# Consider revisiting and implementing some sort of string manipulation algorithm instead
 def category_and_difficulty(category, difficulty):
+
+    # Match == switch like in Java
     match difficulty:
         case 'easy':
             match category:
@@ -107,6 +125,7 @@ def category_and_difficulty(category, difficulty):
                     return get_question("https://opentdb.com/api.php?amount=1&category=14&difficulty=easy")
                 case _:
                     return random_question()
+        # Splitting up based on difficulty first, should be more efficient than vice versa
         case 'medium':
             match category:
                 case 'math':
@@ -151,6 +170,7 @@ def category_and_difficulty(category, difficulty):
             return random_question()
 
 
+# Only have a category parameter to fulfill
 def only_category(category):
     match category:
         case 'math':
@@ -173,6 +193,7 @@ def only_category(category):
             return random_question()
 
 
+# Only have a difficulty parameter to fulfill
 def only_difficulty(difficulty):
     match difficulty:
         case 'easy':
@@ -186,14 +207,17 @@ def only_difficulty(difficulty):
 
 
 def get_question_response(request):
+    # Our types provided (we can add more later but this seems sufficient for now)
     categories = ['random', 'math', 'computers', 'film', 'music', 'videogames', 'sports', 'history', 'television']
     difficulties = ['easy', 'medium', 'hard']
 
+    # Use boolean for this?
     category = 'Not provided'
     difficulty = 'Not provided'
     question = ''
     choices = []
 
+    
     for cat in categories:
         if cat in request:
             category = cat
@@ -202,6 +226,7 @@ def get_question_response(request):
         if dif in request:
             difficulty = dif
 
+    # May be redundant with loops? We can probably merge these? Revisit
     if category in categories and difficulty in difficulties:
         return category_and_difficulty(category, difficulty)
     elif category in categories:
@@ -210,4 +235,7 @@ def get_question_response(request):
         return only_difficulty(difficulty)
     else:
         return random_question()
+
+
+
 

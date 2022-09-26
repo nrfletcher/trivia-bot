@@ -1,10 +1,11 @@
 from trivia import random_question, get_question_response
 import discord
 from questions import cleanup
+from database import *
 
 # Setting token for API interaction and setting our bot (client) permissions to Intents.all()
 # Intents was changed in Discord API recently, changes functionality of permissions via developer panel
-TOKEN = '...'
+TOKEN = 'MTAyMDQzNzM4OTA0NDM1OTE3OA.G_u65o.qMuHm62ioqsXWtV3_5DhQ-H-mPJI3s6yVhz7TQ'
 client = discord.Client(intents=discord.Intents.all())
 
 
@@ -39,6 +40,9 @@ async def on_message(message):
     # We do not want to interact with our own bot messages, this prevents any chance of infinite loops
     if message.author == client.user:
         return
+
+    async def get_user_id():
+        return message.author.id
 
     # Our function for handling the retrieval of a randomized or specified trivia question
     async def get_question():
@@ -111,6 +115,12 @@ async def on_message(message):
 
         elif user_message.lower() == '!bye':
             await message.channel.send(f'See you later {username}!')
+            return
+
+        elif user_message.lower() == '!id':
+            user_id = await get_user_id()
+            await message.channel.send(f'{username}: {user_id}')
+            return
 
         # Functionality testing
         elif user_message.lower() == '!random':
@@ -125,6 +135,14 @@ async def on_message(message):
             response = answer_data[0]
             correct_answer = answer_data[1]
 
+            # call get_user to retrieve id, if we receive empty string we add user to database
+            user_in_db = get_user(str(message.author.id), message.author.name)
+            if user_in_db:
+                print('user exists already')
+            else:
+                add_user_to_db(message.author.name, str(message.author.id))
+                print('user doesnt exist')
+
             if response == 'correct':
                 embed = discord.Embed(title='Correct answer!', color=discord.Color.green())
                 await message.channel.send(embed=embed)
@@ -136,6 +154,22 @@ async def on_message(message):
 
             return
 
+    if message.channel.name == 'test-suite':
+        if user_message.lower() == '!id_sql':
+            # id_sql = await get_id_sql(message.author.name)
+            userid = message.author.id
+            username = message.author.name
+            await message.channel.send(str(username) + ' ' + str(userid))
+            return
+
+        if '!add user' in user_message.lower():
+            command = user_message.split(' ')
+            user = command[2]
+            userid = command[3]
+            add_user_to_db(user, userid)
+            await message.channel.send(f'Added {user} as {userid}')
+            return
+
     # Testing guild channel exclusivity (shouldn't matter?)
     if user_message.lower() == '!anywhere':
         await message.channel.send('This can be used anywhere')
@@ -143,4 +177,3 @@ async def on_message(message):
 
 # Runs bot
 client.run(TOKEN)
-

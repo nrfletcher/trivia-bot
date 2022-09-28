@@ -1,3 +1,5 @@
+import datetime
+
 from trivia import random_question, get_question_response
 import discord
 from questions import cleanup
@@ -5,7 +7,7 @@ from database import *
 
 # Setting token for API interaction and setting our bot (client) permissions to Intents.all()
 # Intents was changed in Discord API recently, changes functionality of permissions via developer panel
-TOKEN = 'MTAyMDQzNzM4OTA0NDM1OTE3OA.G_u65o.qMuHm62ioqsXWtV3_5DhQ-H-mPJI3s6yVhz7TQ'
+TOKEN = 'MTAyMDQzNzM4OTA0NDM1OTE3OA.GGSTcL.TXLZJ2QTzhLQ1Dl1N7uTyPXDyvXei64ClwRdvs'
 client = discord.Client(intents=discord.Intents.all())
 
 
@@ -36,6 +38,9 @@ async def on_message(message):
     channel = str(message.channel.name)
     # Log information (internal)
     print(f'{username}: {user_message} ({channel})')
+    with open('docs/logs.txt', 'w') as f:
+        now = datetime.datetime.now()
+        f.write(f'{username}: {user_message} ({channel})' + ' ' + str(now))
 
     # We do not want to interact with our own bot messages, this prevents any chance of infinite loops
     if message.author == client.user:
@@ -52,6 +57,8 @@ async def on_message(message):
         prompted_question = question['question']
         choices = question['choices']
         answer = question['answer']
+        q_category = question['category']
+        q_difficulty = question['difficulty']
         prompted_question = cleanup(prompted_question)
         string_answer = answer.lower()
         answer_normal = answer
@@ -103,9 +110,9 @@ async def on_message(message):
                 break
 
         if user_answer == answer or user_answer.lower() == string_answer.lower():
-            return ['correct', answer_normal]
+            return ['correct', answer_normal, q_category, q_difficulty]
         else:
-            return ['false', answer_normal]
+            return ['false', answer_normal, q_category, q_difficulty]
 
     # All messages received in general chat (ID does not correlate to channel.name directly)
     if message.channel.name == 'general':
@@ -128,22 +135,79 @@ async def on_message(message):
             await message.channel.send(response)
             return
 
+        elif user_message.lower() == '!accuracy':
+            vals = answer_rate(message.author.name, str(message.author.id))
+            sembed = discord.Embed(title='Your question accuracy', description='You\'ve answered ' + str(vals[0])
+                                   + ' questions, and gotten ' + str(vals[1]) + ' correct. That\'s an accuracy of '
+                                   + str(vals[2]) + '%', color=discord.Color.purple())
+            await message.channel.send(embed=sembed)
+            return
+
+        elif user_message.lower() == '!favorite':
+            favorite = favorite_genre(message.author.name, str(message.author.id))
+            sembed = discord.Embed(title='Your favorite genre is:', description=favorite, color=discord.Color.green())
+            await message.channel.send(embed=sembed)
+            return
+
+        # Let users get leaderboard
+        elif '!leaderboard top' in user_message.lower():
+            if len(user_message) != 18:
+                await message.channel.send('Not a valid command, the form should be \'!get top {number}\'')
+                return
+            else:
+                values = get_top_users(user_message.lower()[17])
+                points = ''
+                for i in range(len(values[0])):
+                    if i == 0:
+                        points += ':first_place:' + ' '
+                    elif i == 1:
+                        points += ':second_place:' + ' '
+                    elif i == 2:
+                        points += ':third_place:' + ' '
+                    else:
+                        points += ' ' + str(i + 1) + ': '
+                    points += (values[0][i] + ': ' + str(values[1][i])) + ' points'
+                    if i > len(values[0]) - 1:
+                        continue
+                    else:
+                        points += '\n'
+                embed = discord.Embed(title='Top Trivia Geeks Ranked',
+                                      description=points,
+                                      color=discord.Color.gold())
+                await message.channel.send(embed=embed)
+                return
+
         # If we get a question request get an answer and return value from get_question
         # Check correctness and use embed for response
         elif '!question' in user_message.lower():
             answer_data = await get_question()
             response = answer_data[0]
             correct_answer = answer_data[1]
+            category = answer_data[2]
+            # use for data update
+            difficulty = answer_data[3]
+            # use for points
+            points = 0
+            if difficulty == 'easy':
+                points = 1
+            elif difficulty == 'medium':
+                points = 3
+            else:
+                points = 5
 
             # call get_user to retrieve id, if we receive empty string we add user to database
             user_in_db = get_user(str(message.author.id), message.author.name)
             if user_in_db:
-                print('user exists already')
+                # user exists already, update all info
+                update_all_columns(message.author.name, str(message.author.id), category)
             else:
+                # user doesn't exist, add to table and update info
                 add_user_to_db(message.author.name, str(message.author.id))
-                print('user doesnt exist')
+                update_all_columns(message.author.name, str(message.author.id), category)
 
             if response == 'correct':
+                add_correct(message.author.name, str(message.author.id))
+                update_points(message.author.name, str(message.author.id), points)
                 embed = discord.Embed(title='Correct answer!', color=discord.Color.green())
                 await message.channel.send(embed=embed)
             else:

@@ -2,7 +2,6 @@ import requests
 
 # API interaction takes place here
 # Create an extensible way to add additional trivia questions later on
-# Should do all the heavy lifting to reduce massive code blocks in main
 
 
 def default_answer_no_url():
@@ -21,6 +20,7 @@ def default_answer_no_url():
     incorrect_answers = query['results'][0]['incorrect_answers']
 
     # Confirm all information adds up (incorrect answers should be a list of strings)
+    # Run unit tests for these later (note made 11:09pm)
     print(question)
     print(question_answer)
     print(question_difficulty)
@@ -88,11 +88,13 @@ def get_question(url):
         question = query['results'][0]['question']
         question_answer = query['results'][0]['correct_answer']
         incorrect_answers = query['results'][0]['incorrect_answers']
+        category = query['results'][0]['category']
+        difficulty = query['results'][0]['difficulty']
         choices = incorrect_answers
         choices.append(question_answer)
 
         # Get our question more readable for our Discord API layer
-        return {'question': question, 'answer': question_answer, 'choices': choices}
+        return {'question': question, 'answer': question_answer, 'choices': choices, 'category': category, 'difficulty': difficulty}
 
 
 def random_question():
@@ -178,7 +180,7 @@ def only_category(category):
         case 'computers':
             return get_question("https://opentdb.com/api.php?amount=1&category=18")
         case 'film':
-            return get_question("https://opentdb.com/api.php?amount=1&category=10")
+            return get_question("https://opentdb.com/api.php?amount=1&category=11")
         case 'music':
             return get_question("https://opentdb.com/api.php?amount=1&category=12")
         case 'videogames':
@@ -214,10 +216,11 @@ def get_question_response(request):
     # Use boolean for this?
     category = 'Not provided'
     difficulty = 'Not provided'
+    # We can return as list for unused function later
     question = ''
     choices = []
 
-    
+    # If we need a match, we use it
     for cat in categories:
         if cat in request:
             category = cat
@@ -237,5 +240,11 @@ def get_question_response(request):
         return random_question()
 
 
-
-
+def genre(url):
+    if not isinstance(url, str):
+        raise TypeError('This needs to be a string url')
+    else:
+        response = requests.get(url)
+        query = response.json()
+        category = query['results'][0]['category']
+        return category

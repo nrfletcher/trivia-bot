@@ -1,5 +1,4 @@
-# Convert nasty JSON-encoded text (or doubly encoded?) back to their proper text
-# In hindsight this didn't need to be it's own file, probably
+# Convert JSON-encoded text (or doubly encoded) back to their proper text
 
 def cleanup(string):
     new_string = string

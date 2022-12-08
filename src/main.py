@@ -5,19 +5,23 @@ import discord
 from questions import cleanup
 from database import *
 
-# Setting token for API interaction and setting our bot (client) permissions to Intents.all()
-# Intents was changed in Discord API recently, changes functionality of permissions via developer panel
+''' Main program for our Discord bot
+    Will handle all direct interaction with user commands and comments '''
+
+
+''' Setting token for API interaction and setting our bot (client) permissions to Intents.all()
+    Intents was changed in Discord API recently, changes functionality of permissions via developer panel '''
 TOKEN = 'MTAyMDQzNzM4OTA0NDM1OTE3OA.GGSTcL.TXLZJ2QTzhLQ1Dl1N7uTyPXDyvXei64ClwRdvs'
 client = discord.Client(intents=discord.Intents.all())
 
 
-# on_ready() is the default client event run on each initial startup of our bot instance
+''' Runs for every initial instantiation of our Discord bot to the server (i.e. on startup) '''
 @client.event
 async def on_ready():
     print("We have logged in as {0.user}".format(client))
 
 
-# Member join client event, can specify channel
+''' Occurs for every initial joining to the server of some member '''
 @client.event
 async def on_member_join(member):
     # This ID points to general chat guild ID
@@ -28,28 +32,28 @@ async def on_member_join(member):
     return
 
 
-# Any messages received from our client
+''' Our base function for receiving messages and interacting with them '''
 @client.event
 async def on_message(message):
-    # Let's set variables for important data here
-    # Avoid chaos later, ignore Discord IDs under the assumption that multiple users will not have the same name
+    ''' Let's set variables for important data here
+        Avoid chaos later, ignore Discord IDs under the assumption that multiple users will not have the same name '''
     username = str(message.author).split('#')[0]
     user_message = str(message.content)
     channel = str(message.channel.name)
-    # Log information (internal)
+        # Log information (internal)
     print(f'{username}: {user_message} ({channel})')
     with open('docs/logs.txt', 'w') as f:
         now = datetime.datetime.now()
         f.write(f'{username}: {user_message} ({channel})' + ' ' + str(now))
 
-    # We do not want to interact with our own bot messages, this prevents any chance of infinite loops
+        # We do not want to interact with our own bot messages, this prevents any chance of infinite loops
     if message.author == client.user:
         return
 
     async def get_user_id():
         return message.author.id
 
-    # Our function for handling the retrieval of a randomized or specified trivia question
+    ''' Retrieves a question for the user to interact with '''
     async def get_question():
         # Will return a hashmap (dict) of question, choices, and correct answer
         question = get_question_response(user_message.lower())
@@ -234,10 +238,10 @@ async def on_message(message):
             await message.channel.send(f'Added {user} as {userid}')
             return
 
-    # Testing guild channel exclusivity (shouldn't matter?)
+    ''' Non channel inclusive messages should be permitted in any channel within the server itself '''
     if user_message.lower() == '!anywhere':
         await message.channel.send('This can be used anywhere')
         return
 
-# Runs bot
+''' Starts up our bot '''
 client.run(TOKEN)

@@ -1,9 +1,13 @@
 import mysql.connector
 
-# pip install mysql-connector-python
-# create user 'user'@'host' identified with authentication_plugin by '272'; ~ otherwise drop plugin
-# grant all privileges on *.* to 'user'@'host' with grant option;
-# flush privileges (don't forget), now dc root use user
+""" SQL Database Interaction
+    We have the ability to:
+    * Add users, get user(s), update user information columns, get user specific data, as well as general data 
+
+    pip install mysql-connector-python
+    create user 'user'@'host' identified with authentication_plugin by '272'; ~ otherwise drop plugin
+    grant all privileges on *.* to 'user'@'host' with grant option;
+    flush privileges (don't forget), now dc root use user """
 
 
 def connection():
@@ -12,16 +16,19 @@ def connection():
         cursor = db.cursor()
         print('success')
     except mysql.connector.Error as err:
-        # 1049 unknown database
-        # 1045 access denied (typically wrong password or wrong user)
-        # 2005 unknown SQL host (typically wrong, should be localhost)
-        print(err)
+        
+        """ 1049 unknown database
+            1045 access denied (typically wrong password or wrong user)
+            2005 unknown SQL host (typically wrong, should be localhost) """
+        
+        print(err) 
     else:
         print('done')
         cursor.close()
         db.close()
 
 
+ ''' Initial adding of a user to the db, occurs when they first answer a question '''
 def add_user_to_db(user_name, discord_id):
     try:
         # user_id is auto incremented
@@ -39,6 +46,9 @@ def add_user_to_db(user_name, discord_id):
         db.close()
 
 
+''' Retrieves all users in our database
+    We do not add users to our db for joining, but for answering questions so only users who have answered
+    a question will be in our db '''
 def get_users():
     try:
         db = mysql.connector.connect(user='riley272', password='272', host='localhost', database='trivia')
@@ -55,6 +65,7 @@ def get_users():
         db.close()
 
 
+ ''' Gets all user data via discord ID '''
 def get_user(discord_id, name):
     try:
         db = mysql.connector.connect(user='riley272', password='272', host='localhost', database='trivia')
@@ -73,6 +84,7 @@ def get_user(discord_id, name):
         db.close()
 
 
+''' Applicable to all genres: increases users genre count for answers '''
 def update_all_columns(username, discord_id, category):
     try:
         # this all works under the assumption the user exists which should be checked prior
@@ -230,6 +242,7 @@ def update_all_columns(username, discord_id, category):
         db.close()
 
 
+''' Increase correct answers for a user count '''
 def add_correct(username, discord_id):
     try:
         db = mysql.connector.connect(user='riley272', password='272', host='localhost', database='trivia')
@@ -263,7 +276,7 @@ def add_correct(username, discord_id):
         db.close()
 
 
-# Same logic as questions answered
+''' Update users point count for questions answered '''
 def update_points(username, discord_id, points):
     try:
         db = mysql.connector.connect(user='riley272', password='272', host='localhost', database='trivia')
@@ -294,6 +307,7 @@ def update_points(username, discord_id, points):
         db.close()
 
 
+''' Generate the top (limit) users based off total questions answered correctly '''
 def get_top_users(limit):
     try:
         db = mysql.connector.connect(user='riley272', password='272', host='localhost', database='trivia')
@@ -316,6 +330,7 @@ def get_top_users(limit):
         print(err)
 
 
+''' Get the answer rate (correct/wrong) of a user via id '''
 def answer_rate(name, discord_id):
     try:
         db = mysql.connector.connect(user='riley272', password='272', host='localhost', database='trivia')
@@ -339,7 +354,8 @@ def answer_rate(name, discord_id):
     except mysql.connector.Error as err:
         print(err)
 
-
+        
+''' Get the specific favorite genre of any user via id '''
 def favorite_genre(name, discord_id):
     try:
         db = mysql.connector.connect(user='riley272', password='272', host='localhost', database='trivia')

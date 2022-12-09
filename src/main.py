@@ -6,11 +6,13 @@ from questions import cleanup
 from database import *
 
 ''' Main program for our Discord bot
-    Will handle all direct interaction with user commands and comments '''
+    Will handle all direct interaction with user commands and comments 
+    The hierarchy for message input and logic is to prioritize general '''
 
 
 ''' Setting token for API interaction and setting our bot (client) permissions to Intents.all()
     Intents was changed in Discord API recently, changes functionality of permissions via developer panel '''
+
 TOKEN = 'MTAyMDQzNzM4OTA0NDM1OTE3OA.GGSTcL.TXLZJ2QTzhLQ1Dl1N7uTyPXDyvXei64ClwRdvs'
 client = discord.Client(intents=discord.Intents.all())
 

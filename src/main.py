@@ -4,16 +4,24 @@ from trivia import random_question, get_question_response
 import discord
 from questions import cleanup
 from database import *
+import client
 
 ''' Main program for our Discord bot
     Will handle all direct interaction with user commands and comments 
-    The hierarchy for message input and logic is to prioritize general '''
+    The hierarchy for message input and logic is to prioritize general 
+    
+    We use the client class to implement our socket programming to send messages which are received
+    in our Discord server to our adminboard.py PyQt GUI. We abstract this using our Client class
+    handle_message() method to wait for incoming messages and send them outward once received
+    '''
 
+msg_client = client.Client()
+msg_client.start()
 
 ''' Setting token for API interaction and setting our bot (client) permissions to Intents.all()
     Intents was changed in Discord API recently, changes functionality of permissions via developer panel '''
 
-TOKEN = 'MTAyMDQzNzM4OTA0NDM1OTE3OA.GGSTcL.TXLZJ2QTzhLQ1Dl1N7uTyPXDyvXei64ClwRdvs'
+TOKEN = 'TokenPlaceHolder'
 client = discord.Client(intents=discord.Intents.all())
 
 
@@ -37,20 +45,30 @@ async def on_member_join(member):
 ''' Our base function for receiving messages and interacting with them '''
 @client.event
 async def on_message(message):
-    ''' Let's set variables for important data here
-        Avoid chaos later, ignore Discord IDs under the assumption that multiple users will not have the same name '''
+
+    """ Let's set variables for important data here
+        Avoid chaos later, ignore Discord IDs under the assumption that multiple users will not have the same name """
+
     username = str(message.author).split('#')[0]
     user_message = str(message.content)
     channel = str(message.channel.name)
-        # Log information (internal)
+
+    # Upon receiving a message from our Discord server, we send that message out to our server (PyQt GUI)
+    # We utilize the client class to abstract this work and simply 'handle' our message from main
+    msg_client.handle_message(f'{username}: {user_message} ({channel})')
     print(f'{username}: {user_message} ({channel})')
+
+    # Log information (internal)
     with open('docs/logs.txt', 'w') as f:
         now = datetime.datetime.now()
         f.write(f'{username}: {user_message} ({channel})' + ' ' + str(now))
 
-        # We do not want to interact with our own bot messages, this prevents any chance of infinite loops
+    # We do not want to interact with our own bot messages, this prevents any chance of infinite loops
     if message.author == client.user:
         return
+
+    if user_message == 'end':
+        msg_client.end_connection()
 
     async def get_user_id():
         return message.author.id
@@ -59,6 +77,7 @@ async def on_message(message):
     async def get_question():
         # Will return a hashmap (dict) of question, choices, and correct answer
         question = get_question_response(user_message.lower())
+
         # Separate dictionary values for readability
         prompted_question = question['question']
         choices = question['choices']
@@ -77,6 +96,7 @@ async def on_message(message):
         # Allows for easier user-interaction and flexibility in response
         first_letter = 65
         letter_choices = []
+
         # Fill out our choices
         for i in range(len(choices)):
             letter_choices.append(chr(first_letter))
@@ -120,7 +140,10 @@ async def on_message(message):
         else:
             return ['false', answer_normal, q_category, q_difficulty]
 
-    # All messages received in general chat (ID does not correlate to channel.name directly)
+    ''' Our main event loop for all messages incoming to our script 
+        Messages are either --> general (main) or test-suite (admin)
+        Within 'general' we then move to check for specific commands (random, accuracy, question)
+        '''
     if message.channel.name == 'general':
         if user_message.lower() == '!hello':
             await message.channel.send(f'Hello {username}!')
@@ -190,8 +213,10 @@ async def on_message(message):
             response = answer_data[0]
             correct_answer = answer_data[1]
             category = answer_data[2]
+
             # use for data update
             difficulty = answer_data[3]
+
             # use for points
             points = 0
             if difficulty == 'easy':
@@ -232,6 +257,7 @@ async def on_message(message):
             await message.channel.send(str(username) + ' ' + str(userid))
             return
 
+        ''' Manually add users to database '''
         if '!add user' in user_message.lower():
             command = user_message.split(' ')
             user = command[2]

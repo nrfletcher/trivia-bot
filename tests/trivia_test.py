@@ -1,5 +1,9 @@
 import unittest
 
+''' Ensuring that our string corrections work as expected
+    Due to the API call format special characters do not come through properly 
+    '''
+
 
 class Question:
     def __init__(self, string):

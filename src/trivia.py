@@ -2,16 +2,16 @@ import requests
 
 ''' Class for retrieving, cleaning, and packaging API calls for usage in main
     OpenTriviaDB is a simple API that offers a multitude of trivia questions in different genres
-    
+
     This class design is highly anti-DRY and should be refactored, though with that being said
     readability is not inherently tough with it - it's just too much scrolling
-'''
-
+    '''
 
 ''' @param url: url of API call
     @returns:   none '''
-def default_answer_no_url():
 
+
+def default_answer_no_url():
     # Code needed to make API GET request and format into a dictionary holding data
     response = requests.get("https://opentdb.com/api.php?amount=1&category=18&difficulty=hard&type=multiple")
     query = response.json()
@@ -37,8 +37,9 @@ def default_answer_no_url():
 
 ''' @param url: url of API call
     @returns:   none '''
-def default_answer_url_provided(url):
 
+
+def default_answer_url_provided(url):
     # Affirming that link is proper value
     if isinstance(url, str):
 
@@ -68,6 +69,8 @@ def default_answer_url_provided(url):
 
 ''' @param url: url of API call
     @returns:   list containing question fields '''
+
+
 def question_tolist(url):
     if isinstance(url, str):
 
@@ -90,6 +93,8 @@ def question_tolist(url):
 
 ''' @param url: url of API location for specific question
     @returns:   dictionary with question data '''
+
+
 def get_question(url):
     if not isinstance(url, str):
         raise TypeError('This needs to be a string url')
@@ -106,10 +111,13 @@ def get_question(url):
         choices.append(question_answer)
 
         # Get our question more readable for our Discord API layer
-        return {'question': question, 'answer': question_answer, 'choices': choices, 'category': category, 'difficulty': difficulty}
+        return {'question': question, 'answer': question_answer, 'choices': choices, 'category': category,
+                'difficulty': difficulty}
 
 
 ''' Generates a random question for a user '''
+
+
 def random_question():
     return get_question("https://opentdb.com/api.php?amount=1")
     # Accesses a random difficulty random category question from OpenTDB
@@ -119,8 +127,9 @@ def random_question():
     @param difficulty: difficulty of question requested by user
     @returns         : dictionary with question fields          
 '''
-def category_and_difficulty(category, difficulty):
 
+
+def category_and_difficulty(category, difficulty):
     # Match == switch like in Java
     match difficulty:
         case 'easy':
@@ -190,6 +199,8 @@ def category_and_difficulty(category, difficulty):
 
 ''' @param category -> category type requested by user for question
     @return -> returns our trivia API response '''
+
+
 def only_category(category):
     match category:
         case 'math':
@@ -213,6 +224,8 @@ def only_category(category):
 
 
 ''' Chooses a question based off difficulty specified by user, returns random if left null '''
+
+
 def only_difficulty(difficulty):
     match difficulty:
         case 'easy':
@@ -226,6 +239,8 @@ def only_difficulty(difficulty):
 
 
 ''' Returns our question with specified type '''
+
+
 def get_question_response(request):
     # Our types provided (we can add more later but this seems sufficient for now)
     categories = ['random', 'math', 'computers', 'film', 'music', 'videogames', 'sports', 'history', 'television']
@@ -259,6 +274,8 @@ def get_question_response(request):
 
 
 ''' Helper function for ensuring API call is cleaned properly '''
+
+
 def genre(url):
     if not isinstance(url, str):
         raise TypeError('This needs to be a string url')

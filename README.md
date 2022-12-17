@@ -37,11 +37,11 @@ The admin GUI uses PyQt, a Python binding of the C library Qt
 It utilizes multithreading and socket communication to receive data from the Discord server
 as well as update the GUI concurrently and make requests from the database to present user information
 
-<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph1.JPG"/>
+<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph1.JPG" width=600 height=400/>
 </br>
-<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph2.JPGG"/>
+<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph2.JPG" width=600 height=400/>
 </br>
-<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph3.JPGG"/>
+<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph3.JPG" width=600 height=400/>
 
 ## MySQL Database
 The MySQL relational database uses mysql.connector to grab data and store user information so that the

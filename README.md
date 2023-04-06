@@ -1,10 +1,14 @@
 # Discord Trivia Bot
 
 ## How-To Instructions
-To use this Discord bot and associated admin GUI
+1. You must have a Discord bot to utilize for this project, here is an example tutorial: https://www.ionos.com/digitalguide/server/know-how/creating-discord-bot/
+2. To connect the bot to the trivia bot controller, in a target folder:
 ```
 git clone https://github.com/nrfletcher/trivia-bot
+cd trivia-bot
 ```
+3. Within the 'main.py' file, change the string TOKEN to your Discord bot token from Discord developer dashboard
+4. In order to utilize the statistics and user records, alter the 'mysql.connector.connect()' parameters to your MySQL database
 
 ## This project has three main components:
 * The server bot utilizing the Discord.py API

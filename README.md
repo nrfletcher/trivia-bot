@@ -1,8 +1,9 @@
 # Discord Trivia Bot
 
 ## How-To Instructions
-1. You must have a Discord bot to utilize for this project, here is an example tutorial: https://www.ionos.com/digitalguide/server/know-how/creating-discord-bot/
-2. To connect the bot to the trivia bot controller, in a target folder:
+1. You must have a Discord bot to utilize for this project, here is an example tutorial: 
+  https://www.ionos.com/digitalguide/server/know-how/creating-discord-bot/
+3. To connect the bot to the trivia bot controller, in a target folder:
 ```
 git clone https://github.com/nrfletcher/trivia-bot
 cd trivia-bot

@@ -1,4 +1,11 @@
 # Discord Trivia Bot
+
+## How-To Instructions
+To use this Discord bot and associated admin GUI
+```
+git clone https://github.com/nrfletcher/trivia-bot
+```
+
 ## This project has three main components:
 * The server bot utilizing the Discord.py API
 * The admin GUI utilizing the PyQt binding

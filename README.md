@@ -15,8 +15,9 @@ cd trivia-bot
 * The server bot utilizing the Discord.py API
 * The admin GUI utilizing the PyQt binding
 * A MySQL database for storing all user and server information
+* (the database, bot, and GUI all work in conjunction, however the MySQL server is necessary for user statistics)
 
-# Video demonstration of program
+## Video demonstration of program
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/erW7A1jGKLw/0.jpg)](https://www.youtube.com/watch?v=erW7A1jGKLw)
 
 ## Server Bot

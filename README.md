@@ -9,7 +9,8 @@ git clone https://github.com/nrfletcher/trivia-bot
 cd trivia-bot
 ```
 3. Within the 'main.py' file, change the string TOKEN to your Discord bot token from Discord developer dashboard
-4. In order to utilize the statistics and user records, alter the 'mysql.connector.connect()' parameters to your MySQL database
+4. Run 'main.py' to activate the bot and begin using the script. To have this running constant without a machine you will need to use a service such as Heroku
+5. In order to utilize the statistics and user records, alter the 'mysql.connector.connect()' parameters to your MySQL database
 
 ## This project has three main components:
 * The server bot utilizing the Discord.py API

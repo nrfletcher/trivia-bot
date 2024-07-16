@@ -25,7 +25,11 @@ cd trivia-bot
 * (the database, bot, and GUI all work in conjunction, however the MySQL server is necessary for user statistics)
 
 ## 📷 Video Demonstration
+<div align="center">
+  
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/erW7A1jGKLw/0.jpg)](https://www.youtube.com/watch?v=erW7A1jGKLw)
+
+</div>
 
 ## Server Bot
 The server bot uses the asynchronous capabilities of the Discord API as well as an instance of the Client
@@ -58,11 +62,11 @@ It utilizes multithreading and socket communication to receive data from the Dis
 as well as update the GUI concurrently and make requests from the database to present user information
 <div align="center">
 
-<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph1.JPG" width=250 height=200/>
+<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph1.JPG" width=450 height=300/>
 </br>
-<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph2.JPG" width=250 height=200/>
+<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph2.JPG" width=450 height=300/>
 </br>
-<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph3.JPG" width=250 height=200/>
+<img src="https://github.com/nrfletcher/trivia-bot/blob/main/graph3.JPG" width=450 height=300/>
 </div>
 
 ## MySQL Database
